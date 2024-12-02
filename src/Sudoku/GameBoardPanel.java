@@ -2,6 +2,8 @@ package Sudoku;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GameBoardPanel extends JPanel {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
@@ -76,7 +78,20 @@ public class GameBoardPanel extends JPanel {
         }
         return true;
     }
+    // [TODO 2] Define a Listener Inner Class for all the editable Cells
+// .........
+    private class CellInputListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Get a reference of the JTextField that triggers this action event
+            Cell sourceCell = (Cell)e.getSource();
+
+            // Retrieve the int entered
+            int numberIn = Integer.parseInt(sourceCell.getText());
+            // For debugging
+            System.out.println("You entered " + numberIn);
+        }
+    }
 }
 
-// [TODO 2] Define a Listener Inner Class for all the editable Cells
-// .........
