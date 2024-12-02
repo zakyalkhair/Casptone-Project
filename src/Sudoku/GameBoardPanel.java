@@ -43,10 +43,10 @@ public class GameBoardPanel extends JPanel {
         CellInputListener listener = new CellInputListener();
 
         // [TODO 4] Adds this common listener to all editable cells
-        for (int row ...) {
-            for (int col ...) {
-                if (cells[row][col].isEditable()) {
-                    cells[row][col].addActionListener(listener);   // For all editable rows and cols
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) { // Loop through all rows
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) { // Loop through all columns
+                if (cells[row][col].isEditable()) { // Check if the cell is editable
+                    cells[row][col].addActionListener(listener); // Add the listener
                 }
             }
         }
