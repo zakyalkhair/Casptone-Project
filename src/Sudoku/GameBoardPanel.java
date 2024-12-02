@@ -40,10 +40,16 @@ public class GameBoardPanel extends JPanel {
 
         // [TODO 3] Allocate a common listener as the ActionEvent listener for all the
         //  Cells (JTextFields)
-        // .........
+        CellInputListener listener = new CellInputListener();
 
         // [TODO 4] Adds this common listener to all editable cells
-        // .........
+        for (int row ...) {
+            for (int col ...) {
+                if (cells[row][col].isEditable()) {
+                    cells[row][col].addActionListener(listener);   // For all editable rows and cols
+                }
+            }
+        }
 
         super.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
     }
