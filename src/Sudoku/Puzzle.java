@@ -37,24 +37,28 @@ public class Puzzle {
 
         // Need to use input parameter cellsToGuess!
         // Hardcoded for testing, only 2 cells of "8" is NOT GIVEN
-        boolean[][] hardcodedIsGiven =
-                {{true, true, true, true, true, false, true, true, true},
-                        {true, true, true, true, true, true, true, true, false},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true},
-                        {true, true, true, true, true, true, true, true, true}};
 
         // Copy from hardcodedIsGiven into array "isGiven"
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
-                isGiven[row][col] = hardcodedIsGiven[row][col];
+                isGiven[row][col] = true;
+                }
             }
+        for (int i = 0; i < cellsToGuess; i++) {
+            isGiven[(int) (Math.random() * SudokuConstants.GRID_SIZE)][(int) (Math.random() * SudokuConstants.GRID_SIZE)] = false;
+//        int count = 0;
+//        while (count < cellsToGuess) {
+//            int row = (int) (Math.random() * SudokuConstants.GRID_SIZE);
+//            int col = (int) (Math.random() * SudokuConstants.GRID_SIZE);
+//
+//            if (isGiven[row][col]) {
+//                isGiven[row][col] = false;
+//                count++;
+//
         }
-    }
 
-    //(For advanced students) use singleton design pattern for this class
+        //(For advanced students) use singleton design pattern for this clas
+
+
+    }
 }

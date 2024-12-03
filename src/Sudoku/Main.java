@@ -8,6 +8,5 @@ public class Main {
         // .........
         System.out.println("Sudoku Game");
         Sudoku game = new Sudoku();
-        game.play();
     }
 }

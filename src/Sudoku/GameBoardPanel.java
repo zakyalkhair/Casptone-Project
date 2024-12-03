@@ -59,8 +59,24 @@ public class GameBoardPanel extends JPanel {
      * You can call this method to start a new game.
      */
     public void newGame() {
-        // Generate a new puzzle
-        puzzle.newPuzzle(2);
+        String input = JOptionPane.showInputDialog(null, "Masukkan jumlah sel yang akan diisi (1-25):", "Input Jumlah Sel", JOptionPane.QUESTION_MESSAGE);
+
+        // Validasi input
+        int cellsToGuess;
+        try {
+            cellsToGuess = Integer.parseInt(input); // Konversi ke angka
+            if (cellsToGuess < 1 || cellsToGuess > 25) { // Pastikan dalam rentang 1-81
+                throw new NumberFormatException("Out of range");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Input tidak valid! Menggunakan default 4.", "Error", JOptionPane.ERROR_MESSAGE);
+            cellsToGuess = 4; // Default jika input tidak valid
+        }
+
+        // Tampilkan dialog pemberitahua
+
+        // Generate puzzle baru
+        puzzle.newPuzzle(cellsToGuess);
 
         // Initialize all the 9x9 cells, based on the puzzle.
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
@@ -97,6 +113,15 @@ public class GameBoardPanel extends JPanel {
             int numberIn = Integer.parseInt(sourceCell.getText());
             // For debugging
             System.out.println("You entered " + numberIn);
+            if (numberIn == sourceCell.number) {
+                   sourceCell.status = CellStatus.CORRECT_GUESS;
+                } else {
+                    sourceCell.status = CellStatus.WRONG_GUESS;
+                }
+                sourceCell.paint();
+            if (isSolved()){
+                JOptionPane.showMessageDialog(null,"Congratulation!");
+            }
         }
     }
 }
