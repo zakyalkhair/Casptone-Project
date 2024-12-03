@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="640c9505-f236-450a-a2f9-fe6c5f8241d6" name="Changes" comment="sudoku">
-      <change beforePath="$PROJECT_DIR$/src/Sudoku/GameBoardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sudoku/GameBoardPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +91,23 @@
       <option name="project" value="LOCAL" />
       <updated>1733105448551</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="sudoku">
+      <option name="closed" value="true" />
+      <created>1733106290387</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1733106290387</updated>
+    </task>
+    <task id="LOCAL-00004" summary="sudoku">
+      <option name="closed" value="true" />
+      <created>1733207620303</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1733207620303</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
