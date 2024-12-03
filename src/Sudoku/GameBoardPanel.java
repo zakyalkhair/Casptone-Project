@@ -59,10 +59,16 @@ public class GameBoardPanel extends JPanel {
      * You can call this method to start a new game.
      */
     public void newGame() {
-        String input = JOptionPane.showInputDialog(null, "Masukkan jumlah sel yang akan diisi (1-25):", "Input Jumlah Sel", JOptionPane.QUESTION_MESSAGE);
-
-        // Validasi input
+        String input = JOptionPane.showInputDialog(null, "Pilih level yang diinginkan (Easy/Medium/Hard):", "Input Level", JOptionPane.QUESTION_MESSAGE);
         int cellsToGuess;
+        if (input.equalsIgnoreCase("Easy")){
+            cellsToGuess = 4;
+        } else if (input.equalsIgnoreCase("Medium")) {
+            cellsToGuess = 7;
+        }
+        else
+            cellsToGuess = 10;
+
         try {
             cellsToGuess = Integer.parseInt(input); // Konversi ke angka
             if (cellsToGuess < 1 || cellsToGuess > 25) { // Pastikan dalam rentang 1-81
@@ -73,7 +79,7 @@ public class GameBoardPanel extends JPanel {
             cellsToGuess = 4; // Default jika input tidak valid
         }
 
-        // Tampilkan dialog pemberitahua
+        // Tampilkan dialog pemberitahuan
 
         // Generate puzzle baru
         puzzle.newPuzzle(cellsToGuess);
