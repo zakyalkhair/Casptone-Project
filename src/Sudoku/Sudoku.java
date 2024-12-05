@@ -1,9 +1,11 @@
+
 package Sudoku;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 
 /**
  * The main Sudoku program
@@ -21,13 +23,27 @@ public class Sudoku extends JFrame {
     private Timer timer;
     private int timeLeft = 300; // 5 menit dalam detik
     private boolean isTimerRunning = false;
+    private int wrongAttempts = 0; // Track wrong attempts
+    private JLabel messageLabel = new JLabel("Welcome to Sudoku!");
+    private Font customFont;
 
     // Constructor
     public Sudoku() {
+        try {
+            InputStream fontStream = getClass().getResourceAsStream("/resources/fonts/HelveticaNeueMedium.otf");
+            customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(16f); // Ukuran default 16
+        } catch (Exception e) {
+            e.printStackTrace();
+            customFont = new Font("Arial", Font.BOLD, 16); // Fallback ke Arial
+        }
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
 
         cp.add(board, BorderLayout.CENTER);
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        messageLabel.setFont(customFont.deriveFont(20f)); // Ukuran lebih besar
+        cp.add(messageLabel, BorderLayout.NORTH); // Tambahkan di atas papan
+
 
         JPanel btnPanel = new JPanel(); // Create a panel to hold the button
         btnPanel.add(btnNewGame);
@@ -76,9 +92,12 @@ public class Sudoku extends JFrame {
     // Memulai permainan baru
     private void startNewGame() {
         timeLeft = 300; // Reset timer ke 5 menit
+        wrongAttempts = 0; // Reset wrong attempts
+        updateStatusBar(); // Update the status bar
         updateTimerLabel();
         board.newGame(); // Papan permainan baru
         startTimer(); // Otomatis mulai timer
+        resetMessageLabel();
     }
 
     // Memulai timer
@@ -102,5 +121,21 @@ public class Sudoku extends JFrame {
         int minutes = timeLeft / 60;
         int seconds = timeLeft % 60;
         timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+    }
+    public void updateStatusBar() {
+        int cellsRemaining = board.countCellsRemaining();
+        messageLabel.setText(String.format("Cells remaining: %d | Wrong attempts: %d", cellsRemaining, wrongAttempts));
+    }
+
+    public void incrementWrongAttempts() {
+        wrongAttempts++;
+        updateStatusBar();
+        if (wrongAttempts >= 3) {
+            JOptionPane.showMessageDialog(this, "Three wrong attempts! Restarting the game.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            startNewGame();
+        }
+    }
+    public void resetMessageLabel() {
+        messageLabel.setText("Welcome to Sudoku!");
     }
 }
