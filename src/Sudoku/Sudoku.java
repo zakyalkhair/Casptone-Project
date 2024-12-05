@@ -63,17 +63,6 @@ public class Sudoku extends JFrame {
                 }
             }
         });
-        
-        // Add an ActionListener to the "New Game" button
-        btnNewGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Generate a new game
-                board.newGame();
-                // Optionally, you can display a message
-                JOptionPane.showMessageDialog(null, "New Game Started!");
-            }
-        });
 
         // Mulai game baru saat aplikasi dijalankan
         startNewGame();
