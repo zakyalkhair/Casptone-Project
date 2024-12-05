@@ -41,7 +41,7 @@ public class Sudoku extends JFrame {
 
         cp.add(board, BorderLayout.CENTER);
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setFont(customFont.deriveFont(20f)); // Ukuran lebih besar
+        messageLabel.setFont(customFont.deriveFont(18f)); // Ukuran lebih besar
         cp.add(messageLabel, BorderLayout.NORTH); // Tambahkan di atas papan
 
 
