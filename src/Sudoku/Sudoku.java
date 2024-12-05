@@ -22,6 +22,9 @@ public class Sudoku extends JFrame {
 
     private Timer timer;
     private int timeLeft = 300; // 5 menit dalam detik
+    private final int timeLeftEasy = 120;  // 2 menit
+    private final int timeLeftMedium = 240;  // 4 menit
+    private final int timeLeftHard = 360;  // 6 menit
     private boolean isTimerRunning = false;
     private int wrongAttempts = 0; // Track wrong attempts
     private JLabel messageLabel = new JLabel("Welcome to Sudoku!");
@@ -90,14 +93,41 @@ public class Sudoku extends JFrame {
     }
 
     // Memulai permainan baru
-    private void startNewGame() {
-        timeLeft = 300; // Reset timer ke 5 menit
-        wrongAttempts = 0; // Reset wrong attempts
-        updateStatusBar(); // Update the status bar
+   private void startNewGame() {
+        String[] options = {"Easy", "Medium", "Hard"};
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Pilih level yang diinginkan:",
+                "Input Level",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        int cellsToGuess;
+        if (choice == 0) { // Easy
+            timeLeft = timeLeftEasy;
+            cellsToGuess = 4;
+        } else if (choice == 1) { // Medium
+            timeLeft = timeLeftMedium;
+            cellsToGuess = 7;
+        } else if (choice == 2) { // Hard
+            timeLeft = timeLeftHard;
+            cellsToGuess = 10;
+        } else { // Default jika tidak ada pilihan
+            JOptionPane.showMessageDialog(null, "Tidak ada level yang dipilih. Menggunakan default Easy.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            timeLeft = timeLeftEasy;
+            cellsToGuess = 4;
+        }
+
+        // Menampilkan jumlah tebakan berdasarkan level
+        JOptionPane.showMessageDialog(null, "Anda memilih level dengan " + cellsToGuess + " cells to guess.");
+
+        board.newGame(cellsToGuess); // Berikan parameter cellsToGuess
         updateTimerLabel();
-        board.newGame(); // Papan permainan baru
-        startTimer(); // Otomatis mulai timer
-        resetMessageLabel();
+        startTimer();
     }
 
     // Memulai timer
