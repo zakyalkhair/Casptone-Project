@@ -1,9 +1,10 @@
 package Sudoku;
-
+import javax.swing.border.Border;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 public class GameBoardPanel extends JPanel {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
@@ -50,8 +51,36 @@ public class GameBoardPanel extends JPanel {
                 }
             }
         }
-
         super.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                // Tentukan border untuk setiap sel
+                int top = (row % SudokuConstants.SUBGRID_SIZE == 0) ? 3 : 1;  // Lebih tebal di baris sub-grid
+                int left = (col % SudokuConstants.SUBGRID_SIZE == 0) ? 3 : 1; // Lebih tebal di kolom sub-grid
+                int bottom = (row == SudokuConstants.GRID_SIZE - 1) ? 3 : 1; // Border bawah untuk sel terakhir
+                int right = (col == SudokuConstants.GRID_SIZE - 1) ? 3 : 1;  // Border kanan untuk sel terakhir
+
+                // Menambahkan border tebal di batas sub-grid 3x3
+                if (row % SudokuConstants.SUBGRID_SIZE == 0) {
+                    top = 5;  // Memberikan border yang lebih tebal pada bagian atas sub-grid
+                }
+                if (col % SudokuConstants.SUBGRID_SIZE == 0) {
+                    left = 5;  // Memberikan border yang lebih tebal pada bagian kiri sub-grid
+                }
+
+                // Membuat border tebal di sisi sub-grid
+                Border border = BorderFactory.createMatteBorder(top, left, bottom, right, Color.BLACK);
+                // Menambahkan border tipis pada sisi non-sub-grid
+                Border thinGrayBorder = BorderFactory.createMatteBorder(
+                        (top == 1) ? 1 : 0, (left == 1) ? 1 : 0, (bottom == 1) ? 1 : 0, (right == 1) ? 1 : 0,
+                        Color.WHITE);
+
+                // Menggabungkan kedua border (tebal dan tipis)
+                cells[row][col].setBorder(BorderFactory.createCompoundBorder(border, thinGrayBorder));
+
+                super.add(cells[row][col]);
+            }
+        }
     }
 
     /**
