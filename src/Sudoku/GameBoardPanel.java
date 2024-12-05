@@ -89,22 +89,6 @@ public class GameBoardPanel extends JPanel {
      * Generate a new puzzle; and reset the game board of cells based on the puzzle.
      * You can call this method to start a new game.
      */
-    
-        // Menampilkan jumlah tebakan berdasarkan level
-        JOptionPane.showMessageDialog(null, "Anda memilih level dengan " + cellsToGuess + " cells to guess.");
-
-        // Tampilkan dialog pemberitahuan
-
-        // Generate puzzle baru
-        puzzle.newPuzzle(cellsToGuess);
-
-        // Initialize all the 9x9 cells, based on the puzzle.
-        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
-            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
-                cells[row][col].newGame(puzzle.numbers[row][col], puzzle.isGiven[row][col]);
-            }
-        }
-    }
     public void newGame(int cellsToGuess) {
         // Generate puzzle baru
         puzzle.newPuzzle(cellsToGuess);
