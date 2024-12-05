@@ -1,3 +1,4 @@
+
 package Sudoku;
 import javax.swing.border.Border;
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class GameBoardPanel extends JPanel {
      * It also contains a Puzzle with array numbers and isGiven
      */
     private Puzzle puzzle = new Puzzle();
+
 
     /**
      * Constructor
@@ -88,7 +90,7 @@ public class GameBoardPanel extends JPanel {
      * You can call this method to start a new game.
      */
     public void newGame() {
-       String[] options = {"Easy", "Medium", "Hard"};
+        String[] options = {"Easy", "Medium", "Hard"};
         // Menampilkan dialog dengan tombol pilihan
         int choice = JOptionPane.showOptionDialog(
                 null,
@@ -147,24 +149,36 @@ public class GameBoardPanel extends JPanel {
     }
     // [TODO 2] Define a Listener Inner Class for all the editable Cells
 // .........
+    public int countCellsRemaining() {
+        int count = 0;
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                if (cells[row][col].status == CellStatus.TO_GUESS || cells[row][col].status == CellStatus.WRONG_GUESS) { // Only count TO_GUESS cells
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
     private class CellInputListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Get a reference of the JTextField that triggers this action event
-            Cell sourceCell = (Cell)e.getSource();
+            Cell sourceCell = (Cell) e.getSource();
 
-            // Retrieve the int entered
-            int numberIn = Integer.parseInt(sourceCell.getText());
-            // For debugging
-            System.out.println("You entered " + numberIn);
-            if (numberIn == sourceCell.number) {
-                   sourceCell.status = CellStatus.CORRECT_GUESS;
+            try {
+                int numberIn = Integer.parseInt(sourceCell.getText());
+                if (numberIn == sourceCell.number) {
+                    sourceCell.status = CellStatus.CORRECT_GUESS;
                 } else {
                     sourceCell.status = CellStatus.WRONG_GUESS;
+                    ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).incrementWrongAttempts(); // Inform main class
                 }
                 sourceCell.paint();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Input harus berupa angka.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).updateStatusBar(); // Update the status bar
         }
-    }
+        }
 }
-
