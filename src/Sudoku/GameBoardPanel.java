@@ -59,25 +59,35 @@ public class GameBoardPanel extends JPanel {
      * You can call this method to start a new game.
      */
     public void newGame() {
-        String input = JOptionPane.showInputDialog(null, "Pilih level yang diinginkan (Easy/Medium/Hard):", "Input Level", JOptionPane.QUESTION_MESSAGE);
-        int cellsToGuess;
-        if (input.equalsIgnoreCase("Easy")){
-            cellsToGuess = 4;
-        } else if (input.equalsIgnoreCase("Medium")) {
-            cellsToGuess = 7;
-        }
-        else
-            cellsToGuess = 10;
+       String[] options = {"Easy", "Medium", "Hard"};
+        // Menampilkan dialog dengan tombol pilihan
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Pilih level yang diinginkan:",
+                "Input Level",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
 
-        try {
-            cellsToGuess = Integer.parseInt(input); // Konversi ke angka
-            if (cellsToGuess < 1 || cellsToGuess > 25) { // Pastikan dalam rentang 1-81
-                throw new NumberFormatException("Out of range");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Input tidak valid! Menggunakan default 4.", "Error", JOptionPane.ERROR_MESSAGE);
-            cellsToGuess = 4; // Default jika input tidak valid
+        int cellsToGuess;
+
+        // Mengatur jumlah berdasarkan pilihan dengan if-else
+        if (choice == 0) { // Easy
+            cellsToGuess = 4;
+        } else if (choice == 1) { // Medium
+            cellsToGuess = 7;
+        } else if (choice == 2) { // Hard
+            cellsToGuess = 10;
+        } else { // Jika tidak ada pilihan (menutup dialog)
+            JOptionPane.showMessageDialog(null, "Tidak ada level yang dipilih. Menggunakan default Easy.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            cellsToGuess = 4; // Default Easy
         }
+
+        // Menampilkan jumlah tebakan berdasarkan level
+        JOptionPane.showMessageDialog(null, "Anda memilih level dengan " + cellsToGuess + " cells to guess.");
 
         // Tampilkan dialog pemberitahuan
 
