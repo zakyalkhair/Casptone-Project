@@ -125,9 +125,6 @@ public class GameBoardPanel extends JPanel {
                     sourceCell.status = CellStatus.WRONG_GUESS;
                 }
                 sourceCell.paint();
-            if (isSolved()){
-                JOptionPane.showMessageDialog(null,"Congratulation!");
-            }
         }
     }
 }
