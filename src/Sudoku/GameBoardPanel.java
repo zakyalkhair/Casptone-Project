@@ -89,34 +89,7 @@ public class GameBoardPanel extends JPanel {
      * Generate a new puzzle; and reset the game board of cells based on the puzzle.
      * You can call this method to start a new game.
      */
-    public void newGame() {
-        String[] options = {"Easy", "Medium", "Hard"};
-        // Menampilkan dialog dengan tombol pilihan
-        int choice = JOptionPane.showOptionDialog(
-                null,
-                "Pilih level yang diinginkan:",
-                "Input Level",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
-
-        int cellsToGuess;
-
-        // Mengatur jumlah berdasarkan pilihan dengan if-else
-        if (choice == 0) { // Easy
-            cellsToGuess = 4;
-        } else if (choice == 1) { // Medium
-            cellsToGuess = 7;
-        } else if (choice == 2) { // Hard
-            cellsToGuess = 10;
-        } else { // Jika tidak ada pilihan (menutup dialog)
-            JOptionPane.showMessageDialog(null, "Tidak ada level yang dipilih. Menggunakan default Easy.", "Info", JOptionPane.INFORMATION_MESSAGE);
-            cellsToGuess = 4; // Default Easy
-        }
-
+    
         // Menampilkan jumlah tebakan berdasarkan level
         JOptionPane.showMessageDialog(null, "Anda memilih level dengan " + cellsToGuess + " cells to guess.");
 
@@ -132,7 +105,17 @@ public class GameBoardPanel extends JPanel {
             }
         }
     }
+    public void newGame(int cellsToGuess) {
+        // Generate puzzle baru
+        puzzle.newPuzzle(cellsToGuess);
 
+        // Initialize all the 9x9 cells, based on the puzzle.
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                cells[row][col].newGame(puzzle.numbers[row][col], puzzle.isGiven[row][col]);
+            }
+        }
+    }
     /**
      * Return true if the puzzle is solved
      * i.e., none of the cell have status of TO_GUESS or WRONG_GUESS
