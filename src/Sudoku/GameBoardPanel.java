@@ -147,11 +147,9 @@ public class GameBoardPanel extends JPanel {
     }
 
     private class CellInputListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             Cell sourceCell = (Cell) e.getSource();
-
             try {
                 int numberIn = Integer.parseInt(sourceCell.getText());
                 if (numberIn == sourceCell.number) {
