@@ -21,12 +21,15 @@ public class Sudoku extends JFrame {
 
     // private variables
     private GameBoardPanel board = new GameBoardPanel();
-    private JButton btnNewGame = new JButton("New Game");
     private JButton btnPlay = new JButton("Play");
     private JButton btnPause = new JButton("Pause");
     private JLabel timerLabel = new JLabel("05:00");
-    // Other class variables
-    JButton musicToggleButton = new JButton("Toggle Music");
+    private JLabel messageLabel = new JLabel("Welcome to Sudoku!");
+    private JLabel hintLabel = new JLabel("Hints: 0");
+    private JButton musicToggleButton = new JButton("Music Off");
+    private JButton hintButton = new JButton("Get Hint");
+    private JButton strategyButton = new JButton("How to Play");
+    private JButton resetGameButton = new JButton("Reset Game");
 
     private Clip backgroundMusicClip; // For looping background music
     private ExecutorService executorService = Executors.newSingleThreadExecutor(); // To handle background music playback
@@ -39,9 +42,10 @@ public class Sudoku extends JFrame {
     private final int timeLeftMedium = 240;  // 4 menit
     private final int timeLeftHard = 360;  // 6 menit
     private boolean isTimerRunning = false;
-
     private int wrongAttempts = 0; // Track wrong attempts
-    private JLabel messageLabel = new JLabel("Welcome to Sudoku!");
+    private int hintsUsed = 0;
+    JButton showAnswerButton = new JButton("Show Answer");
+
     private Theme currentTheme = Theme.DEFAULT; // Tema awal
     private JButton themeButton = new JButton("Change Theme"); // Button for theme selection
     private Font customFont;
@@ -56,40 +60,97 @@ public class Sudoku extends JFrame {
             customFont = new Font("Arial", Font.BOLD, 16); // Fallback ke Arial
         }
         //Setup Frame
+        // Configure container
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
         cp.setBackground(Color.BLACK);
-        //Configure Board
+
+// Configure Board
         cp.add(board, BorderLayout.CENTER);
-        //Configure message label
+
+// Configure message label
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setPreferredSize(new Dimension(250, 50));
-        messageLabel.setFont(customFont.deriveFont(20f)); // Ukuran lebih besar
+        messageLabel.setPreferredSize(new Dimension(250, 45));
+        messageLabel.setFont(customFont.deriveFont(25f)); // Ukuran lebih besar
         messageLabel.setForeground(new Color(176, 224, 230)); // Gaming theme color
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Padding untuk keseluruhan panel
         cp.add(messageLabel, BorderLayout.NORTH); // Tambahkan di atas papan
-        //COnfigure musicbutton
+
+// Create a panel to hold the right-side components
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBackground(Color.BLACK);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding untuk keseluruhan panel
+
+// Add timer label to right panel
+        timerLabel.setFont(customFont.deriveFont(16f));
+        timerLabel.setForeground(new Color(176, 224, 230));
+        timerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(timerLabel);
+
+// Add hint label and button to right panel
+        hintLabel.setFont(customFont.deriveFont(16f));
+        hintLabel.setForeground(new Color(176, 224, 230));
+        hintLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(Box.createVerticalStrut(10)); // Spasi vertikal
+        rightPanel.add(hintLabel);
+        rightPanel.add(Box.createVerticalStrut(10)); // Spasi vertikal
+
+// Create styled buttons
+        JButton styledThemeButton = createStyledButton(themeButton);
+        themeButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(Box.createVerticalStrut(10)); // Spasi antar tombol
+        rightPanel.add(styledThemeButton);
+
+// Create Music toggle
         musicToggleButton.setFont(customFont);
         musicToggleButton.setBackground(Color.DARK_GRAY);
         musicToggleButton.setForeground(Color.WHITE);
         musicToggleButton.setFocusPainted(false);
-        //timerlabel
-        timerLabel.setFont(customFont.deriveFont(16f)); // Set font yang lebih besar agar pas dengan ukuran baru
-        // Create a panel to hold the button
-        JPanel btnPanel = new JPanel();
-        btnPanel.setBackground(Color.BLACK); // Gaming theme color
-        btnPanel.add(timerLabel);
-        btnPanel.add(createStyledButton(btnPlay));
-        btnPanel.add(createStyledButton(btnPause));
-        btnPanel.add(createStyledButton(btnNewGame));
-        btnPanel.add(musicToggleButton);
-        btnPanel.add(createStyledButton(themeButton));
-        cp.add(btnPanel, BorderLayout.SOUTH);
-        themeButton.addActionListener(e -> showThemeSelectionDialog());
+        musicToggleButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(Box.createVerticalStrut(10));
+        rightPanel.add(musicToggleButton);
 
-        btnNewGame.addActionListener(e -> startNewGame());
+// Add bottom panel with buttons
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.BLACK);
+
+// Left button panel
+        JPanel leftButtonPanel = new JPanel();
+        leftButtonPanel.setBackground(Color.BLACK);
+        leftButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Align to the left
+        leftButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding for the panel
+        leftButtonPanel.add(createStyledButton(btnPlay));
+        leftButtonPanel.add(createStyledButton(btnPause));
+        leftButtonPanel.add(createStyledButton(showAnswerButton));
+        leftButtonPanel.add(createStyledButton(hintButton));
+
+// Right button panel
+        JPanel rightButtonPanel = new JPanel();
+        rightButtonPanel.setBackground(Color.BLACK);
+        rightButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Align to the right
+        rightButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding for the panel
+        rightButtonPanel.add(createStyledButton(resetGameButton));
+
+// Add panels to bottom panel
+        bottomPanel.add(leftButtonPanel, BorderLayout.WEST);
+        bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
+
+// Add panels to container
+        cp.add(bottomPanel, BorderLayout.SOUTH);
+        cp.add(rightPanel, BorderLayout.EAST);
+
+// Add action listeners
+        showAnswerButton.addActionListener(e -> board.showSolution());
+        themeButton.addActionListener(e -> showThemeSelectionDialog());
         btnPlay.addActionListener(e -> startTimer());
         btnPause.addActionListener(e -> pauseTimer());
         musicToggleButton.addActionListener(e -> toggleMusic());
+        hintButton.addActionListener(e -> useHint());
+        strategyButton.addActionListener(e -> showStrategy());
+        resetGameButton.addActionListener(e -> resetGame());
+
+
 
         // Timer untuk hitungan mundur
         timer = new Timer(1000, new ActionListener() {
@@ -205,7 +266,6 @@ public class Sudoku extends JFrame {
         int minutes = timeLeft / 60;
         int seconds = timeLeft % 60;
         timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
-        timerLabel.setForeground(new Color(176, 224, 230));
     }
     public void updateStatusBar() {
         int cellsRemaining = board.countCellsRemaining();
@@ -220,6 +280,34 @@ public class Sudoku extends JFrame {
             JOptionPane.showMessageDialog(this, "Three wrong attempts! Restarting the game.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
             startNewGame();
         }
+    }
+    private void useHint() {
+        hintsUsed++;
+        hintLabel.setText("Hints: " + hintsUsed);
+        // You can add logic here to reveal a hint to the player
+    }
+
+    // Show strategy or solution
+    private void showStrategy() {
+        // Show basic strategy or solution steps
+        JOptionPane.showMessageDialog(this, "Here is a simple Sudoku strategy: Try filling in rows, columns, and 3x3 blocks systematically.");
+    }
+    private void showAnswer() {
+        if (JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to reveal the answer? This will end your current game.",
+                "Reveal Answer",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            board.showSolution(); // Metode ini harus diimplementasikan di GameBoardPanel untuk menampilkan solusi
+            timer.stop(); // Hentikan timer
+            isTimerRunning = false;
+            JOptionPane.showMessageDialog(this, "The answer has been revealed.", "Answer Revealed", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Reset game
+    private void resetGame() {
+        startNewGame();
     }
     public void resetMessageLabel() {
         messageLabel.setText("Welcome to Sudoku " + playerName + "!");
@@ -272,8 +360,10 @@ public class Sudoku extends JFrame {
     private void toggleMusic() {
         if (isMusicPlaying) {
             stopBackgroundMusic();
+            musicToggleButton.setText("Music On");
         } else {
             startBackgroundMusic("/membasuh.wav");
+            musicToggleButton.setText("Music Off");
         }
     }
 
@@ -326,50 +416,66 @@ public class Sudoku extends JFrame {
         currentTheme = theme;
 
         // Update UI colors based on theme
+        Color backgroundColor = Color.BLACK;
+        Color foregroundColor = new Color(176, 224, 230);
+        Color buttonBackgroundColor = new Color(70, 70, 70);
+        Color buttonForegroundColor = Color.WHITE;
+
         switch (theme) {
             case DEFAULT:
-                getContentPane().setBackground(Color.BLACK);
-                messageLabel.setForeground(new Color(176, 224, 230));
+                backgroundColor = Color.BLACK;
+                foregroundColor = new Color(176, 224, 230);
+                buttonBackgroundColor = new Color(70, 70, 70);
+                buttonForegroundColor = Color.WHITE;
                 break;
             case WHITE:
-                getContentPane().setBackground(Color.WHITE);
-                messageLabel.setForeground(new Color(50, 50, 50));
+                backgroundColor = Color.WHITE;
+                foregroundColor = new Color(50, 50, 50);
+                buttonBackgroundColor = new Color(240, 240, 240);
+                buttonForegroundColor = new Color(50, 50, 50);
                 break;
             case COLORFUL:
-                getContentPane().setBackground(new Color(255, 105, 180)); // Red background
-                messageLabel.setForeground(new Color(255, 255, 0)); // Yellow text
+                backgroundColor = new Color(255, 105, 180); // Pink background
+                foregroundColor = new Color(255, 255, 0);   // Yellow text
+                buttonBackgroundColor = new Color(0, 255, 255); // Cyan buttons
+                buttonForegroundColor = new Color(128, 0, 128); // Purple text
                 break;
             case WOOD_CHOCOLATE:
-                getContentPane().setBackground(new Color(139, 69, 19)); // Wood brown background
-                messageLabel.setForeground(new Color(255, 228, 181)); // Light brown text
+                backgroundColor = new Color(139, 69, 19); // Wood brown background
+                foregroundColor = new Color(255, 228, 181); // Light brown text
+                buttonBackgroundColor = new Color(205, 133, 63); // Chocolate buttons
+                buttonForegroundColor = new Color(255, 228, 181); // Light text
                 break;
         }
 
-        // Apply theme to buttons
-        for (Component component : ((JPanel) getContentPane().getComponent(2)).getComponents()) {
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                if (theme == Theme.WHITE) {
-                    button.setBackground(new Color(240, 240, 240)); // Light gray buttons
-                    button.setForeground(new Color(50, 50, 50)); // Dark text
-                } else if (theme == Theme.COLORFUL) {
-                    button.setBackground(new Color(255, 255, 102)); // Cyan buttons
-                    button.setForeground(new Color(128, 0, 128)); // Magenta text
-                } else if (theme == Theme.WOOD_CHOCOLATE) {
-                    button.setBackground(new Color(205, 133, 63)); // Chocolate buttons
-                    button.setForeground(new Color(255, 228, 181)); // Light text
-                } else {
-                    button.setBackground(new Color(70, 70, 70)); // Default dark buttons
-                    button.setForeground(Color.WHITE); // White text
-                }
-            }
-        }
+        // Update main frame background and labels
+        getContentPane().setBackground(backgroundColor);
+        messageLabel.setForeground(foregroundColor);
+        timerLabel.setForeground(foregroundColor);
+        hintLabel.setForeground(foregroundColor);
+
+        // Update buttons and panels
+        updateComponentColors(getContentPane(), backgroundColor, buttonBackgroundColor, buttonForegroundColor);
 
         // Repaint the frame to apply changes
         repaint();
     }
 
-
-
-    // Play sound effect
+    private void updateComponentColors(Container container, Color panelBackground, Color buttonBackground, Color buttonForeground) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                component.setBackground(panelBackground);
+                updateComponentColors((Container) component, panelBackground, buttonBackground, buttonForeground);
+            } else if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                button.setBackground(buttonBackground);
+                button.setForeground(buttonForeground);
+                button.setFocusPainted(false);
+            } else if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                label.setForeground(buttonForeground);
+            }
+        }
+    }
+       // Play sound effect
 }
