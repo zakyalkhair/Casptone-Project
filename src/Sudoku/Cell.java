@@ -64,12 +64,6 @@ public class Cell extends JTextField {
             super.setBackground(BG_WRONG_GUESS);
         }
     }
-    public void resetCell() {
-        setText(""); // Clear input
-        status = CellStatus.TO_GUESS;
-        setEditable(true);
-        setBackground(Color.WHITE); // Default color
-    }
 
 
 
