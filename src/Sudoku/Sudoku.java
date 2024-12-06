@@ -31,6 +31,7 @@ public class Sudoku extends JFrame {
     private Clip backgroundMusicClip; // For looping background music
     private ExecutorService executorService = Executors.newSingleThreadExecutor(); // To handle background music playback
     private boolean isMusicPlaying = false; // Music status flag
+    private String playerName = "Player"; // Default name
 
     private Timer timer;
     private int timeLeft = 300; // 5 menit dalam detik
@@ -41,7 +42,8 @@ public class Sudoku extends JFrame {
 
     private int wrongAttempts = 0; // Track wrong attempts
     private JLabel messageLabel = new JLabel("Welcome to Sudoku!");
-
+    private Theme currentTheme = Theme.DEFAULT; // Tema awal
+    private JButton themeButton = new JButton("Change Theme"); // Button for theme selection
     private Font customFont;
 
     // Constructor
@@ -80,7 +82,9 @@ public class Sudoku extends JFrame {
         btnPanel.add(createStyledButton(btnPause));
         btnPanel.add(createStyledButton(btnNewGame));
         btnPanel.add(musicToggleButton);
+        btnPanel.add(createStyledButton(themeButton));
         cp.add(btnPanel, BorderLayout.SOUTH);
+        themeButton.addActionListener(e -> showThemeSelectionDialog());
 
         btnNewGame.addActionListener(e -> startNewGame());
         btnPlay.addActionListener(e -> startTimer());
@@ -114,7 +118,7 @@ public class Sudoku extends JFrame {
 
         // Mulai game baru saat aplikasi dijalankan
         startNewGame();
-        startBackgroundMusic("/The Price is Right Losing Horn - Sound Effect (HD).wav");
+        startBackgroundMusic("/membasuh.wav");
         pack();     // Pack the UI components, instead of using setSize()
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // to handle window-closing
         setTitle("Sudoku");
@@ -123,6 +127,27 @@ public class Sudoku extends JFrame {
 
     // Memulai permainan baru
     private void startNewGame() {
+        if (playerName.equals("Player")) { // Hanya minta nama pertama kali
+            boolean validName = false;
+            while (!validName) {
+                playerName = JOptionPane.showInputDialog(
+                        this,
+                        "Enter your name:",
+                        "Player Name",
+                        JOptionPane.QUESTION_MESSAGE
+                );
+                if (playerName == null || playerName.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Name cannot be empty. Please enter your name.",
+                            "Invalid Input",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                } else {
+                    validName = true;
+                }
+            }
+        }
         String[] options = {"Easy", "Medium", "Hard"};
         int choice = JOptionPane.showOptionDialog(
                 null,
@@ -184,7 +209,7 @@ public class Sudoku extends JFrame {
     }
     public void updateStatusBar() {
         int cellsRemaining = board.countCellsRemaining();
-        messageLabel.setText(String.format("Cells remaining: %d | Wrong attempts: %d", cellsRemaining, wrongAttempts));
+        messageLabel.setText(String.format("Player: %s | Cells remaining: %d | Wrong attempts: %d", playerName, cellsRemaining, wrongAttempts));
     }
 
     public void incrementWrongAttempts() {
@@ -197,7 +222,7 @@ public class Sudoku extends JFrame {
         }
     }
     public void resetMessageLabel() {
-        messageLabel.setText("Welcome to Sudoku!");
+        messageLabel.setText("Welcome to Sudoku " + playerName + "!");
     }
     private JButton createStyledButton(JButton button) {
         button.setFont(customFont);
@@ -248,7 +273,7 @@ public class Sudoku extends JFrame {
         if (isMusicPlaying) {
             stopBackgroundMusic();
         } else {
-            startBackgroundMusic("/The Price is Right Losing Horn - Sound Effect (HD).wav");
+            startBackgroundMusic("/membasuh.wav");
         }
     }
 
@@ -258,6 +283,92 @@ public class Sudoku extends JFrame {
         executorService.shutdownNow(); // Clean up the executor service
         super.dispose();
     }
+    private void showThemeSelectionDialog() {
+        String[] themes = {"Default", "White Mode", "Colorful UI", "Wood Chocolate"};
+
+// Default colors for a more standard UI theme
+        UIManager.put("OptionPane.background", Color.WHITE);
+        UIManager.put("Panel.background", Color.WHITE);
+        UIManager.put("OptionPane.messageForeground", Color.BLACK);
+        UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
+        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+
+
+        String selectedTheme = (String) JOptionPane.showInputDialog(
+                this,
+                "Select a theme:",
+                "Theme Selection",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                themes,
+                themes[0]
+        );
+
+        if (selectedTheme != null) {
+            switch (selectedTheme) {
+                case "Default":
+                    applyTheme(Theme.DEFAULT);
+                    break;
+                case "White Mode":
+                    applyTheme(Theme.WHITE);
+                    break;
+                case "Colorful UI":
+                    applyTheme(Theme.COLORFUL);
+                    break;
+                case "Wood Chocolate":
+                    applyTheme(Theme.WOOD_CHOCOLATE);
+                    break;
+            }
+        }
+    }
+
+    private void applyTheme(Theme theme) {
+        currentTheme = theme;
+
+        // Update UI colors based on theme
+        switch (theme) {
+            case DEFAULT:
+                getContentPane().setBackground(Color.BLACK);
+                messageLabel.setForeground(new Color(176, 224, 230));
+                break;
+            case WHITE:
+                getContentPane().setBackground(Color.WHITE);
+                messageLabel.setForeground(new Color(50, 50, 50));
+                break;
+            case COLORFUL:
+                getContentPane().setBackground(new Color(255, 105, 180)); // Red background
+                messageLabel.setForeground(new Color(255, 255, 0)); // Yellow text
+                break;
+            case WOOD_CHOCOLATE:
+                getContentPane().setBackground(new Color(139, 69, 19)); // Wood brown background
+                messageLabel.setForeground(new Color(255, 228, 181)); // Light brown text
+                break;
+        }
+
+        // Apply theme to buttons
+        for (Component component : ((JPanel) getContentPane().getComponent(2)).getComponents()) {
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (theme == Theme.WHITE) {
+                    button.setBackground(new Color(240, 240, 240)); // Light gray buttons
+                    button.setForeground(new Color(50, 50, 50)); // Dark text
+                } else if (theme == Theme.COLORFUL) {
+                    button.setBackground(new Color(255, 255, 102)); // Cyan buttons
+                    button.setForeground(new Color(128, 0, 128)); // Magenta text
+                } else if (theme == Theme.WOOD_CHOCOLATE) {
+                    button.setBackground(new Color(205, 133, 63)); // Chocolate buttons
+                    button.setForeground(new Color(255, 228, 181)); // Light text
+                } else {
+                    button.setBackground(new Color(70, 70, 70)); // Default dark buttons
+                    button.setForeground(Color.WHITE); // White text
+                }
+            }
+        }
+
+        // Repaint the frame to apply changes
+        repaint();
+    }
+
 
 
     // Play sound effect
