@@ -117,7 +117,7 @@ public class GameBoardPanel extends JPanel {
 
     private void resetHighlighting() {
         for (Cell cell : highlightedCells) {
-            cell.setBackground(Color.WHITE); // Reset to default background color
+            cell.setBackground(new Color(240, 240, 240)); // Reset to default background color
         }
         highlightedCells.clear();
     }
@@ -131,6 +131,19 @@ public class GameBoardPanel extends JPanel {
             }
         }
         return count;
+    }
+    public void showSolution() {
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                // Set solusi untuk setiap sel, baik yang sudah diberikan maupun yang ditebak
+                cells[row][col].setText(String.valueOf(puzzle.numbers[row][col]));
+                cells[row][col].setForeground(Color.BLACK); // Warna teks untuk solusi
+                cells[row][col].setBackground(Color.LIGHT_GRAY); // Warna latar belakang untuk solusi
+                cells[row][col].setEditable(false); // Membuat sel tidak dapat diedit
+                cells[row][col].status = CellStatus.CORRECT_GUESS; // Status menjadi benar
+            }
+        }
+        resetHighlighting(); // Menghapus highlight konflik, jika ada
     }
 
     private class CellInputListener implements ActionListener {
