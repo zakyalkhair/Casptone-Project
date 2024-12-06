@@ -1,55 +1,43 @@
 
+
 package Sudoku;
 import javax.swing.border.Border;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+// Import statements...
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameBoardPanel extends JPanel {
-    private static final long serialVersionUID = 1L;  // to prevent serial warning
-
-    // Define named constants for UI sizes
-    public static final int CELL_SIZE = 60;   // Cell width/height in pixels
+    private static final long serialVersionUID = 1L;
+    public static final int CELL_SIZE = 60;
     public static final int BOARD_WIDTH = CELL_SIZE * SudokuConstants.GRID_SIZE;
     public static final int BOARD_HEIGHT = CELL_SIZE * SudokuConstants.GRID_SIZE;
-    // Board width/height in pixels
 
-    // Define properties
-    /**
-     * The game board composes of 9x9 Cells (customized JTextFields)
-     */
     private Cell[][] cells = new Cell[SudokuConstants.GRID_SIZE][SudokuConstants.GRID_SIZE];
-    /**
-     * It also contains a Puzzle with array numbers and isGiven
-     */
     private Puzzle puzzle = new Puzzle();
 
+    private Color conflictColor = new Color(255, 182, 193); // Light pink for conflicts
+    private Set<Cell> highlightedCells = new HashSet<>(); // To track highlighted cells
 
-    /**
-     * Constructor
-     */
     public GameBoardPanel() {
-        super.setLayout(new GridLayout(SudokuConstants.GRID_SIZE, SudokuConstants.GRID_SIZE));  // JPanel
+        super.setLayout(new GridLayout(SudokuConstants.GRID_SIZE, SudokuConstants.GRID_SIZE));
 
-        // Allocate the 2D array of Cell, and added into JPanel.
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
                 cells[row][col] = new Cell(row, col);
-                super.add(cells[row][col]);   // JPanel
+                super.add(cells[row][col]);
             }
         }
 
-        // [TODO 3] Allocate a common listener as the ActionEvent listener for all the
-        //  Cells (JTextFields)
         CellInputListener listener = new CellInputListener();
 
-        // [TODO 4] Adds this common listener to all editable cells
-        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) { // Loop through all rows
-            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) { // Loop through all columns
-                if (cells[row][col].isEditable()) { // Check if the cell is editable
-                    cells[row][col].addActionListener(listener); // Add the listener
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                if (cells[row][col].isEditable()) {
+                    cells[row][col].addActionListener(listener);
                 }
             }
         }
@@ -85,25 +73,17 @@ public class GameBoardPanel extends JPanel {
         }
     }
 
-    /**
-     * Generate a new puzzle; and reset the game board of cells based on the puzzle.
-     * You can call this method to start a new game.
-     */
-    public void newGame(int cellsToGuess) {
-        // Generate puzzle baru
-        puzzle.newPuzzle(cellsToGuess);
 
-        // Initialize all the 9x9 cells, based on the puzzle.
+    public void newGame(int cellsToGuess) {
+        puzzle.newPuzzle(cellsToGuess);
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
                 cells[row][col].newGame(puzzle.numbers[row][col], puzzle.isGiven[row][col]);
             }
         }
+        resetHighlighting(); // Reset highlighting when starting a new game
     }
-    /**
-     * Return true if the puzzle is solved
-     * i.e., none of the cell have status of TO_GUESS or WRONG_GUESS
-     */
+
     public boolean isSolved() {
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
@@ -114,8 +94,32 @@ public class GameBoardPanel extends JPanel {
         }
         return true;
     }
-    // [TODO 2] Define a Listener Inner Class for all the editable Cells
-// .........
+
+    private void highlightConflicts(Cell sourceCell, int value) {
+        resetHighlighting(); // Clear previous highlights
+
+        int row = sourceCell.row;
+        int col = sourceCell.col;
+
+        // Highlight cells in the same row and column
+        for (int i = 0; i < SudokuConstants.GRID_SIZE; i++) {
+            if (cells[row][i].number == value && cells[row][i] != sourceCell) {
+                cells[row][i].setBackground(conflictColor);
+                highlightedCells.add(cells[row][i]);
+            }
+            if (cells[i][col].number == value && cells[i][col] != sourceCell) {
+                cells[i][col].setBackground(conflictColor);
+                highlightedCells.add(cells[i][col]);
+            }
+        }
+    }
+
+    private void resetHighlighting() {
+        for (Cell cell : highlightedCells) {
+            cell.setBackground(Color.WHITE); // Reset to default background color
+        }
+        highlightedCells.clear();
+    }
     public int countCellsRemaining() {
         int count = 0;
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
@@ -127,6 +131,7 @@ public class GameBoardPanel extends JPanel {
         }
         return count;
     }
+
     private class CellInputListener implements ActionListener {
 
         @Override
@@ -137,15 +142,17 @@ public class GameBoardPanel extends JPanel {
                 int numberIn = Integer.parseInt(sourceCell.getText());
                 if (numberIn == sourceCell.number) {
                     sourceCell.status = CellStatus.CORRECT_GUESS;
+                    resetHighlighting(); // Clear conflicts when the guess is correct
                 } else {
                     sourceCell.status = CellStatus.WRONG_GUESS;
-                    ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).incrementWrongAttempts(); // Inform main class
+                    highlightConflicts(sourceCell, numberIn); // Highlight conflicts
+                    ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).incrementWrongAttempts();
                 }
                 sourceCell.paint();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Input harus berupa angka.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).updateStatusBar(); // Update the status bar
+            ((Sudoku) SwingUtilities.getWindowAncestor(GameBoardPanel.this)).updateStatusBar();
         }
-        }
+    }
 }
