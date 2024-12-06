@@ -14,10 +14,10 @@ public class Cell extends JTextField {
     public static final Color BG_GIVEN = new Color(240, 240, 240); // RGB
     public static final Color FG_GIVEN = Color.BLACK;
     public static final Color FG_NOT_GIVEN = Color.GRAY;
-    public static final Color BG_TO_GUESS  = Color.YELLOW;
-    public static final Color BG_CORRECT_GUESS = new Color(0, 216, 0);
-    public static final Color BG_WRONG_GUESS   = new Color(216, 0, 0);
-    public static final Font FONT_NUMBERS = new Font("OCR A Extended", Font.PLAIN, 28);
+    public static final Color BG_TO_GUESS  = new Color(255, 219, 88);
+    public static final Color BG_CORRECT_GUESS = new Color(144, 238, 144);
+    public static final Color BG_WRONG_GUESS   = new Color(240, 128, 128);
+    public static final Font FONT_NUMBERS = new Font("Arial", Font.PLAIN, 28);
 
     // Define properties (package-visible)
     /** The row and column number [0-8] of this cell */
@@ -27,6 +27,7 @@ public class Cell extends JTextField {
     /** The status of this cell defined in enum CellStatus */
     CellStatus status;
 
+
     /** Constructor */
     public Cell(int row, int col) {
         super();   // JTextField
@@ -34,8 +35,7 @@ public class Cell extends JTextField {
         this.col = col;
         // Inherited from JTextField: Beautify all the cells once for all
         super.setHorizontalAlignment(JTextField.CENTER);
-        super.setFont(FONT_NUMBERS);
-    }
+        super.setFont(FONT_NUMBERS);    }
 
     /** Reset this cell for a new game, given the puzzle number and isGiven */
     public void newGame(int number, boolean isGiven) {
@@ -64,4 +64,13 @@ public class Cell extends JTextField {
             super.setBackground(BG_WRONG_GUESS);
         }
     }
+    public void resetCell() {
+        setText(""); // Clear input
+        status = CellStatus.TO_GUESS;
+        setEditable(true);
+        setBackground(Color.WHITE); // Default color
+    }
+
+
+
 }
